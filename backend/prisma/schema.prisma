@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  KARYAWAN
+}
+
+enum Jabatan {
+  OWNER
+  HEAD_COOK
+  KARYAWAN
+}
+
+enum JenisMenu {
+  MAKANAN
+  MINUMAN
+  SNACK
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  role      Role     @default(KARYAWAN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  karyawan  Karyawan?
+}
+
+model Karyawan {
+  id          Int      @id @default(autoincrement())
+  idKaryawan  String   @unique // Custom ID e.g., KRY001
+  nama        String
+  email       String?  @unique
+  noHp        String?
+  jabatan     Jabatan  @default(KARYAWAN)
+  tgl_masuk   DateTime @default(now())
+  userId      Int      @unique
+  user        User     @relation(fields: [userId], references: [id])
+  transaksi   Transaksi[]
+}
+
+model Pelanggan {
+  id        Int      @id @default(autoincrement())
+  nama      String
+  no_hp     String?
+  alamat    String?
+  createdAt DateTime @default(now())
+  transaksi Transaksi[]
+}
+
+model Menu {
+  id        Int      @id @default(autoincrement())
+  nama      String
+  jenis     JenisMenu
+  harga     Float
+  deskripsi String?
+  gambar    String?
+  isAvailable Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  detailTransaksi DetailTransaksi[]
+}
+
+model Transaksi {
+  id            Int      @id @default(autoincrement())
+  tgl_transaksi DateTime @default(now())
+  total_harga   Float
+  pelangganId   Int?
+  karyawanId    Int
+  
+  pelanggan     Pelanggan? @relation(fields: [pelangganId], references: [id])
+  karyawan      Karyawan   @relation(fields: [karyawanId], references: [id])
+  detail        DetailTransaksi[]
+  feedback      Feedback?
+}
+
+model DetailTransaksi {
+  id          Int      @id @default(autoincrement())
+  transaksiId Int
+  menuId      Int
+  qty         Int
+  subtotal    Float
+
+  transaksi   Transaksi @relation(fields: [transaksiId], references: [id])
+  menu        Menu      @relation(fields: [menuId], references: [id])
+}
+
+model Feedback {
+  id          Int      @id @default(autoincrement())
+  transaksiId Int      @unique
+  rating      Int
+  komentar    String?
+  createdAt   DateTime @default(now())
+
+  transaksi   Transaksi @relation(fields: [transaksiId], references: [id])
+}
