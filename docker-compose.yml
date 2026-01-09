@@ -40,7 +40,7 @@ services:
     networks:
       - sikp_network
     volumes:
-      - ./backend/uploads:/app/uploads
+      - uploads_data:/app/uploads
 
   # --- 3. FRONTEND SERVICE ---
   frontend_service:
@@ -65,6 +65,7 @@ services:
       - "${APP_PORT}:80"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - uploads_data:/app/uploads:ro
     depends_on:
       - app_service
       - frontend_service
@@ -79,4 +80,6 @@ networks:
 # --- VOLUMES ---
 volumes:
   mysql_data:
+    driver: local
+  uploads_data:
     driver: local
