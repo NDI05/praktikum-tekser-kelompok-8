@@ -1,72 +1,201 @@
-# 🚀 Template Project Akhir - Teknologi Server
+# 🍜 SIKP Oyako - Sistem Informasi Kasir & Penjualan
 
-Welcome, Challengers! 👋
-Ini adalah **Starter Pack** (Kerangka Awal) untuk Project Akhir kalian. Repository ini sengaja dibuat **"Barebones"** (Kosongan) agar kalian bisa membangun arsitektur server dari dasar dengan struktur yang rapi.
+**Kelompok 8** - Praktikum Teknologi Server  
 
-## 📂 Struktur Folder
-
-Berikut adalah kondisi awal file yang kalian terima:
-
-### 1. `/app` (Backend Application)
-- **Status:** Sudah di-init (`npm init`), tapi belum ada logic apapun.
-- **Isi:** Folder `routes`, `views`, dan `views/partials` sudah disiapkan.
-- **Tugas Kalian:**
-  - Install library yang dibutuhkan (`express`, `mysql2`, `dotenv`, dll).
-  - Isi logic backend, routing, dan tampilan frontend kalian di sini.
-
-### 2. `/database` (SQL Schema)
-- **Status:** Ada file `init.sql` tapi **KOSONG**.
-- **Tugas Kalian:**
-  - Isi file ini dengan Query SQL (`CREATE TABLE`, `INSERT INTO`) sesuai rancangan database kalian.
-  - File ini nanti akan dieksekusi otomatis oleh Docker saat container database pertama kali nyala.
-
-### 3. `/nginx` (Reverse Proxy)
-- **Status:** Ada file `default.conf` tapi **KOSONG**.
-- **Tugas Kalian:**
-  - Tulis konfigurasi Nginx agar bisa mem-proxy request dari Port 80/8081 ke aplikasi Node.js kalian.
-
-### 4. `docker-compose.yml` (The Orchestrator)
-- **Status:** Skeleton Only (Kerangka Dasar).
-- **Warning:** Bagian `networks` dan `volumes` sengaja **DIHAPUS**.
-- **Tugas Kalian:**
-  - Lengkapi service definition (App, DB, Nginx).
-  - **WAJIB:** Tambahkan konfigurasi `volumes` agar data database **PERSISTENT** (Tidak hilang saat restart).
-  - Setup `networks` agar antar-container bisa saling ngobrol.
+Sistem point-of-sale (POS) untuk Warung Oyako dengan fitur manajemen menu, transaksi, pelanggan, karyawan, dan laporan penjualan.
 
 ---
 
-## 🛠️ Cara Menggunakan Template Ini
+## 📂 Struktur Project
 
-1.  **Clone Repository:**
-    ```bash
-    git clone [https://github.com/kakonoomoidee/praktikum-tekser-template.git](https://github.com/kakonoomoidee/praktikum-tekser-template.git) [NAMA_PROJECT_KELIAN]
-    ```
-
-2.  **Bersihkan Jejak Git Lama (PENTING!):**
-    Masuk ke folder, lalu hapus git bawaan agar bisa di-push ke repo kelompok kalian sendiri.
-    ```bash
-    cd [NAMA_PROJECT_KELIAN]
-    rm -rf .git
-    git init
-    ```
-
-3.  **Setup Environment Variable (CRUCIAL):**
-    Copy file template environment menjadi file `.env` aktif.
-    ```bash
-    cp .env.example .env
-    ```
-    > **Tugas:** Buka file `.env` tersebut, lalu isi `GROUP_NAME`, `APP_PORT`, dan konfigurasi Database sesuai rancangan kelompok kalian.
-
-4.  **Mulai Coding!**
-    - Silakan bagi tugas sesuai Role yang sudah disepakati (Backend, DevOps, Database).
-    - Pastikan semua password database diambil dari process.env (Jangan di-hardcode!).
+```
+├── backend/           # Backend API (Express.js + Prisma)
+│   ├── src/
+│   │   ├── controllers/   # Business logic
+│   │   ├── routes/        # API endpoints
+│   │   ├── middleware/    # Auth middleware
+│   │   └── utils/         # Helper functions
+│   ├── prisma/           # Database schema & migrations
+│   ├── uploads/          # File uploads (menu images)
+│   └── Dockerfile
+│
+├── frontend/          # Frontend (React + Vite + TailwindCSS)
+│   ├── src/
+│   │   ├── pages/        # Page components
+│   │   ├── components/   # Reusable components
+│   │   └── context/      # React context
+│   └── Dockerfile
+│
+├── database/          # Database initialization
+│   └── init.sql          # SQL schema & seed data
+│
+├── nginx/             # Reverse proxy configuration
+│   └── default.conf      # Nginx proxy config
+│
+├── docker-compose.yml  # Docker orchestration
+├── .env               # Environment variables
+└── dokumen/           # Project documentation
+```
 
 ---
 
-## ⚠️ Rules of Thumb
+## 🚀 Quick Start (Docker)
 
-- **Don't Touch:** Jangan ubah nama folder utama (`app`, `database`, `nginx`) biar asisten gampang ngeceknya.
-- **Docker First:** Pastikan aplikasi bisa jalan cuma dengan satu perintah: `docker compose up`.
-- **No Localhost:** Di dalam `docker-compose` dan `.env`, gunakan **Nama Service** sebagai host (bukan localhost).
+### Prerequisites
+- Docker & Docker Compose installed
+- Port 8081 available (atau sesuaikan di `.env`)
 
-_Selamat Berjuang! May the Server be with you._ 🚀
+### 1. Clone & Setup Environment
+```bash
+git clone <repository-url>
+cd praktikum-tekser-template
+
+# Edit .env sesuai kebutuhan (GROUP_NAME, APP_PORT)
+nano .env
+```
+
+### 2. Jalankan dengan Docker
+```bash
+# Build dan jalankan semua services
+docker compose up --build
+
+# Atau jalankan di background
+docker compose up --build -d
+```
+
+### 3. Akses Aplikasi
+- **Web App:** http://localhost:8081
+- **API Backend:** http://localhost:8081/api
+
+### 4. Login Test
+| Role | Username | Password |
+|------|----------|----------|
+| Owner | `owner` | `owner123` |
+| Karyawan | `kasir1` | `kasir123` |
+
+---
+
+## 🏗️ Arsitektur Docker
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                         DOCKER NETWORK                           │
+└──────────────────────────────────────────────────────────────────┘
+
+    Browser (User)
+         │
+         ▼ Port 8081
+    ┌─────────────┐
+    │   NGINX     │ ──────────────────────────────────┐
+    │  (Port 80)  │                                   │
+    └─────────────┘                                   │
+         │ /                                          │ /api
+         ▼                                            ▼
+    ┌─────────────┐                            ┌─────────────┐
+    │  FRONTEND   │                            │   BACKEND   │
+    │  (Vite)     │                            │  (Express)  │
+    │  Port 5173  │                            │  Port 3000  │
+    └─────────────┘                            └─────────────┘
+                                                      │
+                                                      ▼ Prisma ORM
+                                               ┌─────────────┐
+                                               │   MySQL     │
+                                               │  Port 3306  │
+                                               └─────────────┘
+```
+
+---
+
+## 📋 Fitur Aplikasi (CRUD)
+
+| Operasi | Deskripsi |
+|---------|-----------|
+| **Create** | Tambah menu, registrasi pelanggan, buat transaksi, tambah karyawan |
+| **Read** | Lihat daftar menu, list pelanggan, riwayat transaksi, laporan |
+| **Update** | Edit menu (harga, ketersediaan), informasi pelanggan, profil karyawan |
+| **Delete** | Hapus menu, pelanggan, transaksi yang dibatalkan |
+
+---
+
+## 🗄️ Database Schema
+
+| Tabel | Deskripsi |
+|-------|-----------|
+| `User` | Autentikasi user (OWNER/KARYAWAN) |
+| `Karyawan` | Data pegawai |
+| `Pelanggan` | Data pelanggan |
+| `Menu` | Daftar menu (MAKANAN/MINUMAN/SNACK) |
+| `Transaksi` | Record penjualan |
+| `DetailTransaksi` | Item per transaksi |
+| `Feedback` | Rating & komentar pelanggan |
+
+---
+
+## 🛠️ Development (Tanpa Docker)
+
+### Backend
+```bash
+cd backend
+npm install
+npx prisma generate
+npx prisma db push  # Jika database sudah ada
+npm run dev
+```
+
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+---
+
+## 📝 Environment Variables
+
+### Root `.env`
+```env
+# Database
+DB_HOST=db_service
+DB_USER=sikp_user
+DB_PASS=sikp_password_123
+DB_NAME=sikp_oyako
+DB_ROOT_PASS=rootpassword
+
+# App
+GROUP_NAME=kelompok8
+APP_PORT=8081
+JWT_SECRET=rahasia_negara_oyako_123
+```
+
+---
+
+## 🔧 Docker Commands
+
+```bash
+# Start semua services
+docker compose up --build
+
+# Stop semua services
+docker compose down
+
+# Hapus data & rebuild (reset database)
+docker compose down -v
+docker compose up --build
+
+# Lihat logs
+docker compose logs -f
+
+# Lihat logs service tertentu
+docker compose logs -f app_service
+```
+
+---
+
+## 👥 Tim Pengembang
+
+**Kelompok 8** - Praktikum Teknologi Server
+
+---
+
+_Dibuat untuk memenuhi tugas akhir mata kuliah Teknologi Server_ 🚀
