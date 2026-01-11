@@ -69,9 +69,9 @@ const Navbar = () => {
                     <div className="flex items-center">
                         <div className="flex-shrink-0 flex items-center gap-2">
                             <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
-                                <span className="text-white font-bold text-xl">O</span>
+                                <span className="text-white font-bold text-xl">W</span>
                             </div>
-                            <span className="font-bold text-xl text-neutral-900 hidden sm:block">Warung Oyako</span>
+                            <span className="font-bold text-xl text-neutral-900 hidden sm:block">Warmindo Point8</span>
                         </div>
 
                         {/* Desktop Menu */}

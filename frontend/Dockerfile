@@ -1,4 +1,4 @@
-# Frontend Dockerfile - SIKP Oyako (React + Vite)
+# Frontend Dockerfile - SIKP Warmindo Point8 (React + Vite)
 FROM node:20-alpine
 
 # Set working directory

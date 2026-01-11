@@ -54,7 +54,7 @@ const Login = () => {
                     </div>
                     <h1 className="text-5xl font-bold mb-6 leading-tight">Manage Your <span className="text-emerald-300">Warung</span> With Ease.</h1>
                     <p className="text-emerald-100/80 text-lg leading-relaxed">
-                        Streamline your operations, track sales, and manage your menu efficiently with the Warung Oyako System.
+                        Streamline your operations, track sales, and manage your menu efficiently with the Warmindo Point8 System.
                     </p>
                 </div>
 

@@ -4,40 +4,68 @@ services:
   # --- 1. DATABASE SERVICE ---
   db_service:
     image: mysql:8.0
-    container_name: db_${GROUP_NAME}
+    container_name: db_C8
     restart: always
     environment:
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASS}
-      MYSQL_ROOT_PASSWORD: rootpassword
-    # volumes
-    # Network
+      MYSQL_DATABASE: "rizqi"
+      MYSQL_USER: "rizqizz"
+      MYSQL_PASSWORD: "password12"
+      MYSQL_ROOT_PASSWORD: "password123"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - sikp_network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  # --- 2. APP SERVICE ---
+  # --- 2. BACKEND SERVICE ---
   app_service:
-    build: ./app
-    container_name: app_${GROUP_NAME}
+    build: ./backend
+    container_name: app_C8
     restart: always
     expose:
       - "3000"
     environment:
-      - DB_HOST=db_service
-      - DB_USER=${DB_USER}
-      - DB_PASS=${DB_PASS}
-      - DB_NAME=${DB_NAME}
-      - APP_PORT=3000
+      - DATABASE_URL=mysql://rizqizz:password12@db_service:3306/rizqi
+      - JWT_SECRET=${JWT_SECRET:-rahasia_negara_oyako_123}
+      - PORT=3000
+      - NODE_ENV=production
     depends_on:
-      - db_service
-    # Network
+      db_service:
+        condition: service_healthy
+    networks:
+      - sikp_network
+    volumes:
+      - uploads_data:/app/uploads
+
+  # --- 3. FRONTEND SERVICE ---
+  frontend_service:
+    build: ./frontend
+    container_name: frontend_C8
+    restart: always
+    expose:
+      - "5173"
+    environment:
+      - VITE_API_URL=
+    depends_on:
+      - app_service
+    networks:
+      - sikp_network
 
   # --- 3. NGINX SERVICE ---
   nginx_service:
     image: nginx:alpine
-    container_name: nginx_${GROUP_NAME}
+    container_name: nginx_C8
     restart: always
     ports:
-      - "${APP_PORT}:80"
+      - "2583:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - uploads_data:/app/uploads:ro
     depends_on:
       - app_service
     # Network
