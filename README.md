@@ -1,4 +1,4 @@
-# 🍜 SIKP Oyako - Sistem Informasi Kasir & Penjualan
+# 🍜 SIKP Burjo Point8 - Sistem Informasi Kasir & Penjualan
 
 **Kelompok 8** - Praktikum Teknologi Server  
 
