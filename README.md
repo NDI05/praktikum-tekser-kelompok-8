@@ -2,7 +2,7 @@
 
 **Kelompok 8** - Praktikum Teknologi Server  
 
-Sistem point-of-sale (POS) untuk Warung Oyako dengan fitur manajemen menu, transaksi, pelanggan, karyawan, dan laporan penjualan.
+Sistem point-of-sale (POS) untuk Warung Burjo Point8 dengan fitur manajemen menu, transaksi, pelanggan, karyawan, dan laporan penjualan.
 
 ---
 
